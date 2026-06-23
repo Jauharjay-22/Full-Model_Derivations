@@ -1,0 +1,379 @@
+\documentclass[12pt,a4paper]{report}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[margin=1in]{geometry}
+\usepackage{setspace}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{mathtools}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{tikz}
+\usepackage{pgfplotstable}
+\usetikzlibrary{patterns}
+\usepgfplotslibrary{fillbetween}
+\usepackage{xcolor}
+\usepackage{mdframed}
+\usepackage{enumitem}
+\usepackage{multirow}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{tocloft}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{listings}
+% natbib not used -- manual bibliography
+\usepackage{hyperref}
+\hypersetup{
+	colorlinks=true,
+	linkcolor=blue!60!black,
+	citecolor=green!50!black,
+	urlcolor=blue!70!black
+}
+
+% ── Page Style ───────────────────────────────────────────────
+% ── Page Style ───────────────────────────────────────────────
+\fancypagestyle{plain}{
+	\fancyhf{}
+	\fancyfoot[C]{\thepage}
+	\renewcommand{\headrulewidth}{0pt}
+}
+\doublespacing
+
+% ── Theorem Environments ─────────────────────────────────────
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[chapter]
+\newtheorem{example}{Example}[chapter]
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[chapter]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+
+\theoremstyle{remark}
+\newtheorem{remark}{Remark}[chapter]
+
+% ── Highlighted Boxes ────────────────────────────────────────
+\newmdenv[
+backgroundcolor=blue!6,
+linecolor=blue!40,
+linewidth=1pt,
+roundcorner=5pt,
+innerleftmargin=10pt,
+innerrightmargin=10pt,
+innertopmargin=8pt,
+innerbottommargin=8pt
+]{keybox}
+
+\newmdenv[
+backgroundcolor=green!6,
+linecolor=green!50!black,
+linewidth=1pt,
+roundcorner=5pt,
+innerleftmargin=10pt,
+innerrightmargin=10pt,
+innertopmargin=8pt,
+innerbottommargin=8pt
+]{resultbox}
+
+% ── Python Code Style ────────────────────────────────────────
+\lstdefinestyle{pythonstyle}{
+	language=Python,
+	basicstyle=\ttfamily\small,
+	keywordstyle=\color{blue!70!black}\bfseries,
+	stringstyle=\color{green!50!black},
+	commentstyle=\color{gray}\itshape,
+	numberstyle=\tiny\color{gray},
+	numbers=left,
+	stepnumber=1,
+	numbersep=8pt,
+	backgroundcolor=\color{gray!8},
+	frame=single,
+	rulecolor=\color{gray!40},
+	breaklines=true,
+	breakatwhitespace=false,
+	showstringspaces=false,
+	tabsize=4,
+	captionpos=b,
+}
+
+% ── Chapter Title Formatting ───────────────────────────────
+\titleformat{\chapter}[display]
+{\normalfont\Huge\bfseries\color{blue!60!black}\centering}
+{CHAPTER \thechapter}
+{20pt}
+{\Huge}
+\titlespacing*{\chapter}{0pt}{40pt}{40pt}
+
+% ── Custom Commands ──────────────────────────────────────────
+\newcommand{\lagr}{\mathcal{L}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\taustar}{\tau^{*}}
+\newcommand{\partialL}[1]{\dfrac{\partial \lagr}{\partial #1}}
+
+% ============================================================
+
+
+\begin{document}
+	\section{Complete Optimization Problem}
+	
+	The complete constrained optimization problem is given by:
+	
+	\begin{equation}
+		\begin{aligned}
+			& \underset{\tau}{\text{maximize}} & & g(\tau) = \alpha + \beta\tau - \gamma\tau^2 \\
+			& \text{subject to} & & \tau \geq \tau_{min} \\
+			& & & \tau \leq \tau_{max} \\
+			& & & \tau \in (0, 1) \\
+			& & & \alpha > 0, \; \beta > 0, \; \gamma > 0
+		\end{aligned}
+		\label{eq:full_problem}
+	\end{equation}
+	
+	\section{Optimization Method}
+	\label{sec:kkt_solution}
+	
+	\subsubsection{The Karush-Kuhn-Tucker(KKT) Conditions}
+	The following are step by step procedures of applying the model to the KKT optimization conditions:
+	
+	\subsubsection{Step 1: Re-write Constraints in Standard Form}
+	
+	For the KKT conditions to be applied, every constraint must be 
+	written in the form $g_i(\tau) \leq 0$. We re-write the two 
+	constraints of problem~\eqref{eq:full_problem} as follows:
+	
+	\begin{align}
+		g_1(\tau) &= \tau_{min} - \tau \leq 0 \label{eq:g1}\\
+		g_2(\tau) &= \tau - \tau_{max} \leq 0 \label{eq:g2}
+	\end{align}
+	
+	\subsubsection{Step 2: Construct the Lagrangian}
+	
+	
+	Since we are maximizing, the Lagrangian 
+	is formed by:
+	\\
+	
+	\begin{equation}
+		\lagr(\tau, \mu_1, \mu_2) = g(\tau) - \mu_1 g_1(\tau) 
+		- \mu_2 g_2(\tau)
+	\end{equation}
+	
+	Substituting $g(\tau)$, $g_1(\tau)$, and $g_2(\tau)$, into the Lagrangian we have:
+	\begin{equation}
+		\lagr(\tau, \mu_1, \mu_2) = \alpha + \beta\tau 
+		- \gamma\tau^2 - \mu_1(\tau_{min} - \tau) 
+		- \mu_2(\tau - \tau_{max})
+		\label{eq:lagrangian}
+	\end{equation}
+	
+	where $\mu_1 \geq 0$ and $\mu_2 \geq 0$ are the KKT multipliers 
+	for constraints $g_1$ and $g_2$ respectively. 
+	
+	\subsubsection{Step 3: Apply the Four KKT Conditions}
+	
+	For $\tau^*$ to be the optimal solution of 
+	problem~\eqref{eq:full_problem}, the following four conditions 
+	must all be satisfied simultaneously.
+	
+	\paragraph{Stationarity.}
+	
+	We differentiate the Lagrangian with respect to $\tau$ and set 
+	it equal to zero:
+	
+	\begin{equation}
+		\frac{\partial \lagr}{\partial \tau} = \beta - 2\gamma\tau 
+		+ \mu_1 - \mu_2 = 0
+		\label{eq:stationarity}
+	\end{equation}
+	
+	This equation links the optimal tax rate $\taustar$ directly 
+	to the two multipliers $\mu_1$ and $\mu_2$.
+	
+	\paragraph{Primal Feasibility.}
+	
+	The optimal solution must satisfy all the constraints:
+	
+	\begin{align}
+		\tau_{min} - \tau &\leq 0 \quad \Longleftrightarrow \quad 
+		\tau \geq \tau_{min} \label{eq:pf1}\\
+		\tau - \tau_{max} &\leq 0 \quad \Longleftrightarrow \quad 
+		\tau \leq \tau_{max} \label{eq:pf2}
+	\end{align}
+	
+	\paragraph{Dual Feasibility.}
+	
+	The KKT multipliers must both be non-negative:
+	
+	\begin{equation}
+		\mu_1 \geq 0, \qquad \mu_2 \geq 0
+		\label{eq:df}
+	\end{equation}
+	
+	\paragraph{Complementary Slackness.}
+	
+	For each constraint, either the constraint is active or its 
+	multiplier is zero:
+	
+	\begin{align}
+		\mu_1(\tau_{min} - \tau) &= 0 \label{eq:cs1}\\
+		\mu_2(\tau - \tau_{max}) &= 0 \label{eq:cs2}
+	\end{align}
+	
+	\subsubsection{Step 4: For Case Analysis}
+	
+	From the complementary slackness 
+	conditions~\eqref{eq:cs1} and~\eqref{eq:cs2}, there are 
+	three(3) important cases to consider:
+	
+	\subsubsection*{Case 1: Interior Solution 
+		($\mu_1 = 0$, $\mu_2 = 0$, both constraints inactive)}
+	
+	If neither constraint is binding, both multipliers are zero. 
+	Substituting $\mu_1 = \mu_2 = 0$ into the stationarity 
+	condition~\eqref{eq:stationarity}:
+	
+	\begin{equation}
+		\beta - 2\gamma\tau + 0 - 0 = 0
+	\end{equation}
+	
+	\begin{equation}
+		\beta - 2\gamma\tau = 0
+	\end{equation}
+	
+	It implies:
+	\begin{equation}
+		\taustar = \frac{\beta}{2\gamma}
+		\label{eq:interior}
+	\end{equation}
+	
+	\begin{keybox}
+		\textbf{Optimal Tax Rate for Case 1:}
+		\[
+		\taustar = \frac{\beta}{2\gamma}
+		\]
+		This is the tax rate at which the marginal benefit of 
+		taxation (captured by $\beta$) exactly equals the marginal 
+		cost of taxation (captured by $2\gamma\taustar$). This 
+		solution is valid when $\tau_{min} < \taustar < \tau_{max}$.
+	\end{keybox}
+	
+	We verify whether it is a maximum by checking the second derivative 
+	of $g(\tau)$, so it implies:
+	\[
+	g''(\tau) = -2\gamma < 0 \quad \text{since } \gamma > 0 
+	\quad \checkmark
+	\]
+	The negative second derivative confirms that $\taustar$ is 
+	indeed a maximum.
+	
+	\subsubsection*{Case 2: Lower Bound Active 
+		($\tau = \tau_{min}$, $\mu_2 = 0$)}
+	
+	If the unconstrained optimum lies below $\tau_{min}$, the 
+	lower bound constraint becomes binding, meaning 
+	$\tau^* = \tau_{min}$. Substituting $\tau = \tau_{min}$ 
+	and $\mu_2 = 0$ into the stationarity 
+	condition~\eqref{eq:stationarity}:
+	
+	\begin{equation}
+		\beta - 2\gamma\tau_{min} + \mu_1 - 0 = 0
+	\end{equation}
+	
+	\begin{equation}
+		\mu_1 = 2\gamma\tau_{min} - \beta
+		\label{eq:case2_mu1}
+	\end{equation}
+	
+	For this case to be valid, dual feasibility requires 
+	$\mu_1 \geq 0$:
+	
+	\[
+	2\gamma\tau_{min} - \beta \geq 0 \implies 
+	\frac{\beta}{2\gamma} \leq \tau_{min}
+	\]
+	
+	This means the unconstrained optimum falls below the minimum 
+	allowed tax rate. The lower bound constraint is therefore 
+	active, and the constrained optimum is 
+	$\taustar = \tau_{min}$.
+	
+	\subsubsection*{Case 3: Upper Bound Active 
+		($\tau = \tau_{max}$, $\mu_1 = 0$)}
+	
+	If the unconstrained optimum exceeds $\tau_{max}$, the upper 
+	bound constraint becomes binding, meaning 
+	$\tau^* = \tau_{max}$. Substituting $\tau = \tau_{max}$ 
+	and $\mu_1 = 0$ into the stationarity 
+	condition~\eqref{eq:stationarity}:
+	
+	\begin{equation}
+		\beta - 2\gamma\tau_{max} + 0 - \mu_2 = 0
+	\end{equation}
+	
+	\begin{equation}
+		\mu_2 = \beta - 2\gamma\tau_{max}
+		\label{eq:case3_mu2}
+	\end{equation}
+	
+	For this case to be valid, dual feasibility requires 
+	$\mu_2 \geq 0$:
+	
+	\[
+	\beta - 2\gamma\tau_{max} \geq 0 \implies 
+	\frac{\beta}{2\gamma} \geq \tau_{max}
+	\]
+	
+	This means the unconstrained optimum exceeds the maximum 
+	allowed tax rate. The upper bound constraint is therefore 
+	active, and the constrained optimum is 
+	$\taustar = \tau_{max}$.
+	
+	\subsubsection*{Summary of All Three Cases}
+	
+	\begin{equation}
+		\taustar =
+		\begin{cases}
+			\tau_{min} & \text{if } \dfrac{\beta}{2\gamma} 
+			\leq \tau_{min} \\[10pt]
+			\dfrac{\beta}{2\gamma} & \text{if } \tau_{min} < 
+			\dfrac{\beta}{2\gamma} < \tau_{max} \\[10pt]
+			\tau_{max} & \text{if } \dfrac{\beta}{2\gamma} 
+			\geq \tau_{max}
+		\end{cases}
+		\label{eq:cases_summary}
+	\end{equation}
+	\subsubsection{Sufficiency of the KKT Conditions}
+	
+	\subsubsection{Step 5: Sufficiency Verification}
+	Having identified the candidate optimal solution $\taustar$ 
+	from the KKT conditions, we now confirm that it is indeed 
+	a global maximum and not just any stationary point.
+	
+	We check the second derivative of the objective function 
+	$g(\tau) = \alpha + \beta\tau - \gamma\tau^2$:
+	
+	\[
+	g''(\tau) = -2\gamma
+	\]
+	
+	Since $\gamma > 0$ by assumption, we have:
+	
+	\[
+	g''(\tau) = -2\gamma < 0 \quad \text{for all } \tau
+	\]
+	
+	This means $g(\tau)$ is strictly concave. 
+	For a strictly concave objective function with convex constraints, the KKT conditions are both necessary and sufficient for a global maximum. Therefore, the solution 
+	$\taustar$ obtained from the KKT conditions is guaranteed to 
+	be a unique global maximum of the optimization 
+	problem~\eqref{eq:full_problem}.
+	
+\end{document}

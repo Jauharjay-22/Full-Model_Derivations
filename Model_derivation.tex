@@ -1,0 +1,469 @@
+\documentclass[12pt,a4paper]{report}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[margin=1in]{geometry}
+\usepackage{setspace}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{mathtools}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{tikz}
+\usepackage{pgfplotstable}
+\usetikzlibrary{patterns}
+\usepgfplotslibrary{fillbetween}
+\usepackage{xcolor}
+\usepackage{mdframed}
+\usepackage{enumitem}
+\usepackage{multirow}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{tocloft}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{listings}
+% natbib not used -- manual bibliography
+\usepackage{hyperref}
+\hypersetup{
+	colorlinks=true,
+	linkcolor=blue!60!black,
+	citecolor=green!50!black,
+	urlcolor=blue!70!black
+}
+
+% ── Page Style ───────────────────────────────────────────────
+% ── Page Style ───────────────────────────────────────────────
+\fancypagestyle{plain}{
+	\fancyhf{}
+	\fancyfoot[C]{\thepage}
+	\renewcommand{\headrulewidth}{0pt}
+}
+\doublespacing
+
+% ── Theorem Environments ─────────────────────────────────────
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[chapter]
+\newtheorem{example}{Example}[chapter]
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[chapter]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+
+\theoremstyle{remark}
+\newtheorem{remark}{Remark}[chapter]
+
+% ── Highlighted Boxes ────────────────────────────────────────
+\newmdenv[
+backgroundcolor=blue!6,
+linecolor=blue!40,
+linewidth=1pt,
+roundcorner=5pt,
+innerleftmargin=10pt,
+innerrightmargin=10pt,
+innertopmargin=8pt,
+innerbottommargin=8pt
+]{keybox}
+
+\newmdenv[
+backgroundcolor=green!6,
+linecolor=green!50!black,
+linewidth=1pt,
+roundcorner=5pt,
+innerleftmargin=10pt,
+innerrightmargin=10pt,
+innertopmargin=8pt,
+innerbottommargin=8pt
+]{resultbox}
+
+% ── Python Code Style ────────────────────────────────────────
+\lstdefinestyle{pythonstyle}{
+	language=Python,
+	basicstyle=\ttfamily\small,
+	keywordstyle=\color{blue!70!black}\bfseries,
+	stringstyle=\color{green!50!black},
+	commentstyle=\color{gray}\itshape,
+	numberstyle=\tiny\color{gray},
+	numbers=left,
+	stepnumber=1,
+	numbersep=8pt,
+	backgroundcolor=\color{gray!8},
+	frame=single,
+	rulecolor=\color{gray!40},
+	breaklines=true,
+	breakatwhitespace=false,
+	showstringspaces=false,
+	tabsize=4,
+	captionpos=b,
+}
+
+% ── Chapter Title Formatting ───────────────────────────────
+\titleformat{\chapter}[display]
+{\normalfont\Huge\bfseries\color{blue!60!black}\centering}
+{CHAPTER \thechapter}
+{20pt}
+{\Huge}
+\titlespacing*{\chapter}{0pt}{40pt}{40pt}
+
+% ── Custom Commands ──────────────────────────────────────────
+\newcommand{\lagr}{\mathcal{L}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\taustar}{\tau^{*}}
+\newcommand{\partialL}[1]{\dfrac{\partial \lagr}{\partial #1}}
+
+% ============================================================
+
+\begin{document}
+	
+	\section{Model Derivation}
+	
+	This section presents the step by step approach to the derivation of the model with the idea of the Laffer Curve theory from economics together with Taylor's Theorem in Mathematics. The derivation begins by establishing the underlying economic relationship implied by the Laffer Curve. Subsequently, Taylor's Theorem is employed to obtain an analytical representation of this relationship, leading to the formulation of the final model.
+	
+	% ---- Step 1 -------------------------------------------------------
+	\subsection*{Step 1: What the Laffer Curve Tells Us}
+	
+	The Laffer Curve is an economic concept that describes a non-linear relationship between the tax rate and economic performance. In the context of this study, it is assumed that the relationship between the tax rate and GDP growth follows an inverted U-shaped pattern.
+	
+	When the tax rate is very low, the government collects very little revenue; therefore, it cannot be used for developmental projects such as roads, hospitals, and schools. Without these public goods, the economy cannot grow efficiently, which brings about low growth in GDP.
+	
+	However, as the tax rate increases moderately, government revenue rises, which helps the government invest in developmental projects that boost productivity. So therefore, GDP growth increases.
+	
+	On the other hand, when the tax rate becomes very high, businesses lose motivation, which brings about low investment thus, the private sector shrinks, hence GDP growth falls.
+	
+	The idea is illustrated in Figure~\ref{fig:laffer_shape} below:
+	
+	\begin{figure}[htbp]
+		\centering
+		\begin{tikzpicture}[scale=1.1]
+			% Axes
+			\draw[->, thick] (0,0) -- (6,0) node[right] {Tax rate ($\tau$)};
+			\draw[->, thick] (0,0) -- (0,4) node[above] {GDP growth $g(\tau)$};
+			
+			% Curve: parabola peaking at t* = 2.5 (out of 5)
+			\draw[blue, ultra thick, domain=0:5, smooth, variable=\t]
+			plot ({\t}, {3.2*(\t)*(5-\t)/6.25});
+			
+			% Dotted line at peak
+			\draw[dotted] (2.5,0) -- (2.5,3.2);
+			\filldraw[black] (2.5,3.2) circle (1.5pt);
+			
+			% Label above the peak line
+			\node[above] at (2.5,3.3) {\small Maximum Growth($\tau^*$)};
+			
+			% Region labels
+			\node at (1.1,1) {\small Tax revenue};
+			\node at (1.1,0.65) {\small rises};
+			\node at (3.9,1) {\small Tax revenue};
+			\node at (3.9,0.65) {\small falls};
+			
+			% Axis tick labels
+			\node[below] at (0,0) {0};
+			\node[below] at (5,0) {1};
+		\end{tikzpicture}
+		
+		\caption{The Laffer Curve showing the relationship between the tax rate and GDP growth. GDP growth increases as the tax rate rises up to the optimal tax rate, $\tau^*$, after which it declines.}
+		\label{fig:laffer_shape}
+	\end{figure}
+	
+	In relating this idea in mathematical concepts, the Laffer Curve tells us that the function
+	$g(\tau)$ has the following three properties:
+	
+	\begin{itemize}
+		\item $g(\tau)$ is a smooth, continuous function on $[0, 1]$:
+		There are no sudden jumps or breaks. We write this as $g \in C^2[0,1]$,
+		meaning $g(\tau)$ can be differentiated at least twice.
+		
+		\item $g(\tau)$ is concave: The  curve bends downward like an arch.
+		Mathematically: $g''(\tau) < 0$ for all $\tau \in (0,1)$.
+		
+		\item There exists a unique peak at some tax rate $\tau^* \in (0,1)$
+		where $g'(\tau^*) = 0$, the slope is zero at the maximum,
+		with growth rising before it ($g'(\tau) > 0$ for $\tau < \tau^*$) and
+		falling after it ($g'(\tau) < 0$ for $\tau > \tau^*$).
+	\end{itemize}
+	
+	From the above three properties, it tell us the shape of the function, but does not tells us the nature or form of the equation, so therefore, the Taylor's Theorem is applied  to explicitly derive the equation.
+	
+	% ----- 3.2.2b: Step 2 -------------------------------------------------------
+	\subsubsection*{Step 2: Taylor's Theorem}
+	
+	
+	The Taylor series of a smooth function $f(x)$ about a point 
+	$a$ is an infinite sum of terms representing the function's 
+	derivatives at $a$:
+	
+	\begin{equation}
+		f(x) = \sum_{n=0}^{\infty} \frac{f^{(n)}(a)}{n!}(x - a)^n
+	\end{equation}
+	
+	Expanding this formula gives:
+	
+	\begin{equation}
+		f(x) = f(a) + \frac{f'(a)}{1!}(x - a) 
+		+ \frac{f''(a)}{2!}(x - a)^2 
+		+ \frac{f'''(a)}{3!}(x - a)^3 
+		+ \cdots
+	\end{equation}
+	
+	More precisely, if $g(\tau)$ is a smooth function and we choose a reference
+	point $\tau_0$, then near that point, we replace $a$ with $\tau_0$ and $x$ with $\tau$ and the formula gives:
+	
+	\begin{equation}
+		g(\tau) \;=\; g(\tau_0)
+		\;+\; g'(\tau_0)\,(\tau - \tau_0)
+		\;+\; \frac{g''(\tau_0)}{2!}\,(\tau-\tau_0)^2
+		\;+\; \frac{g'''(\tau_0)}{3!}\,(\tau-\tau_0)^3
+		\;+\; \cdots
+		\label{eq:taylor_full}
+	\end{equation}
+	
+	where $g'(\tau_0)$, $g''(\tau_0)$, $g'''(\tau_0)$ represents the first, second, and
+	third derivatives of $g$ evaluated at $\tau_0$.
+	
+	\medskip
+	\noindent
+	\textbf{Definition of terms:}
+	
+	\begin{itemize}
+		\item $g(\tau_0)$ \ represents the height of the curve at the reference point.
+		This is the value of the function when $\tau = \tau_0$.
+		
+		\item $g'(\tau_0)\,(\tau-\tau_0)$ \ represents the slope at the reference point
+		times how far we move from it. This is the linear part of the approximation.
+		
+		\item $\dfrac{g''(\tau_0)}{2}\,(\tau-\tau_0)^2$ \ represents the curvature at the reference point. This term shows whether the curve bends upward
+		or downward. A negative value here means the curve bends downward.
+		
+		\item Higher-order terms ($\tau^3$, $\tau^4$, \ldots) \ captures finer
+		details of the curve, but they become very small when $\tau$ approaches
+		$\tau_0$. 
+	\end{itemize}
+	
+	% ----- 3.2.2c: Step 3 -------------------------------------------------------
+	\subsubsection*{Step 3: Applying Taylor's Theorem to the Laffer Curve}
+	
+	We now apply the Taylor's Theorem to our GDP growth function, $g(\tau)$.
+	Choosing to expand around the point $\tau_0 = 0$ that is, at zero tax rate,
+	which is the starting point of the Laffer Curve.
+	
+	Setting $\tau_0 = 0$ in equation~\eqref{eq:taylor_full}, we note that
+	$(\tau - 0) = \tau$, which gives us:
+	
+	\begin{equation}
+		g(\tau) \;=\; g(0)
+		\;+\; g'(0)\cdot\tau
+		\;+\; \frac{g''(0)}{2}\cdot\tau^2
+		\;+\; \frac{g'''(0)}{6}\cdot\tau^3
+		\;+\; \cdots
+		\label{eq:taylor_at_zero}
+	\end{equation}
+	
+	% ----- 3.2.2d: Step 4 -------------------------------------------------------
+	\subsubsection*{Step 4: Truncating at the Second-Order Term}
+	
+	We keep only the first three terms up to $\tau^2$ and drop the other terms from $\tau^3$ on wards. This is called a {second-order Taylor approximation,
+		and it is justified for the following reasons:
+		
+		\begin{itemize}
+			\item {The remaining terms are negligibly small.}
+			For smaller values, higher powers shrinks rapidly thus it approaches to zero faster:
+			\[
+			\tau^2 \leq (0.30)^2 = 0.09, \qquad
+			\tau^3 \leq (0.30)^3 = 0.027, \qquad
+			\tau^4 \leq (0.30)^4 = 0.0081
+			\]
+			So $\tau^3$ and beyond contribute very little to the total value of $g(\tau)$,
+			and dropping them causes only a small approximation error.
+			
+			\item {The second-order term captures the shape of the Laffer curve.}
+			A first-order approximation ($g(0) + g'(0)\tau$) gives only a straight line it has no peak, so it cannot represent the Laffer Curve.
+			The second-order term $\frac{g''(0)}{2}\tau^2$ is what creates the
+			curvature of the curve which gives a hill-like. Therefore, we need
+			at least the second-order term.
+			
+		\end{itemize}
+		Now, removing the $\tau^3$ and higher terms from equation~\eqref{eq:taylor_at_zero} gives us:
+		
+		\begin{equation}
+			g(\tau) \;\approx\; g(0) \;+\; g'(0)\cdot\tau \;+\; \frac{g''(0)}{2}\cdot\tau^2
+			\label{eq:taylor_second_order}
+		\end{equation}
+		
+		% ----- 3.2.2e: Step 5 -------------------------------------------------------
+		\subsubsection*{Step 5: Naming the Coefficients}
+		
+		The three terms in equation~\eqref{eq:taylor_second_order} involve the values
+		$g(0)$, $g'(0)$, and $g''(0)$. The following are its economic interpretations.
+		
+		\medskip
+		
+		\begin{itemize}
+			\item \textbf{\(\alpha = g(0)\)} represents the baseline GDP growth rate when the tax rate is zero..
+			
+			\item \textbf{\(\beta = g'(0)\)} represents the initial slope of the growth function. Economically, it measures how rapidly GDP growth changes as the tax rate increases from zero. A positive value indicates that small increases in taxation initially promote growth.
+			
+			\item \textbf{\(\gamma = -\dfrac{g''(0)}{2}\)} represents the curvature of the growth function. It measures how quickly the growth curve begins to bend downward as tax rates rise, it reflecs the diminishing returns to taxation and the eventual negative effects of excessively high tax rates on economic growth.
+		\end{itemize}
+		
+		\medskip
+		
+		From the definition of $\gamma$, it can be seen that, 
+		\[
+		\gamma \;=\; -\frac{g''(0)}{2}
+		\]
+		This is because the Laffer Curve bends downward, mathematically which means $g''(0) < 0$.
+		
+		By writing \[
+		\gamma \;=\; -\frac{g''(0)}{2}
+		\] we ensure that $\gamma$ is a
+		positive number. 
+		An increase in $\gamma$ means the
+		curve bends down more steeply.
+		
+		From the definition of $\gamma$, we have:
+		\[
+		\frac{g''(0)}{2} \;=\; -\gamma
+		\]
+		
+		Substituting all the coefficients into equation~\eqref{eq:taylor_second_order}:
+		
+		\begin{equation}
+			g(\tau) \;\approx\; \alpha \;+\; \beta\tau \;+\; (-\gamma)\tau^2
+			\label{eq:before_box}
+		\end{equation}
+		
+		yields the final model:
+		
+		\begin{equation}
+			g(\tau) \;=\; \alpha \;+\; \beta\tau \;-\; \gamma\tau^2
+			\label{eq:objective}
+		\end{equation}
+		
+		% ----- 3.2.2f: Step 6 -------------------------------------------------------
+		\subsubsection*{Step 6: Conditions the Parameters Must Satisfy}
+		
+		The Laffer Curve does not provide us the form of the model also, it tells us what \emph{signs} the parameters must have.
+		The following conditions makes the equation~\eqref{eq:objective} a valid
+		Laffer-type model:
+		
+		
+		\begin{itemize}[leftmargin=1.5em]
+			\item $\boldsymbol{\alpha > 0}$: With no taxes, that is, at zero taxes, the economy grows due to
+			population growth, technology, and trade. So baseline growth is positive.
+			
+			\item $\boldsymbol{\beta > 0}$: At low tax rates, an increase in taxation
+			helps in economic growth. So the initial slope of the curve is upward thus, positive where $g'(0) > 0$.
+			
+			\item $\boldsymbol{\gamma > 0}$: The curve eventually bends downward, which means
+			the curve is concave. Since $\gamma = -g''(0)/2$ and $g''(0) < 0$,
+			we have $\gamma > 0$.
+			
+		\end{itemize}
+		
+		
+		\noindent
+		By verifying the concavity of our model:
+		\[
+		\frac{d^2 g}{d\tau^2} \;=\; \frac{d}{d\tau}\!\left(\beta - 2\gamma\tau\right)
+		\;=\; -2\gamma
+		\]
+		Since $\gamma > 0$, we have $g''(\tau) = -2\gamma < 0$ for all $\tau$.
+		This confirms that $g(\tau) = \alpha + \beta\tau - \gamma\tau^2$ is
+		\textbf{strictly concave} thus, the function always curves downward,
+		giving it a unique global maximum.
+		
+		% ----- 3.2.2g: Summary -------------------------------------------------------
+		\subsubsection*{Summary of the Model Derivation}
+		
+		The following are the steps used for the model derivation:
+		
+		\begin{enumerate}[label=\textbf{Step \arabic*:}]
+			\item The Laffer Curve implies that $g(\tau)$ is smooth and concave.
+			\item  From Taylor's Theorem, any such smooth function can be
+			approximated by a polynomial near a reference point.
+			\item Expanding $g(\tau)$ around $\tau_0 = 0$ using Taylor's formula.
+			\item Truncating at the second-order term, justified by the small
+			values of higher-order terms. 
+			\item Renaming the Taylor coefficients as $\alpha$, $\beta$, $\gamma$
+			
+			\item The result is the quadratic model:
+			$g(\tau) = \alpha + \beta\tau - \gamma\tau^2$, with $\beta, \gamma > 0$.
+		\end{enumerate}
+		
+		\medskip
+		\noindent
+		\textbf{Economic interpretation of the terms in the final model:}
+		\begin{itemize}
+			\item $\alpha$ \; is the baseline GDP growth: It explains what Ghana's economy
+			would grow at even if there were no taxes at all, that is at zero taxes, driven by population
+			growth, technology, and natural resources.
+			
+			\item $\beta\tau$ \; is the growth benefit of taxation: As the
+			government receives more revenue and invests it in roads, education,
+			and healthcare, GDP growth rises proportionally to the tax rate.
+			
+			\item $-\gamma\tau^2$ \; is the growth cost of high taxation: This
+			term grows faster than $\beta\tau$ as $\tau$ increases, and eventually dominates, resulting in the decreasing of growth rate.
+			incentives, and so on.
+		\end{itemize}
+		
+		\subsection{Model Assumptions}
+		
+		This study uses a quadratic functional form $g(\tau) = \alpha + \beta\tau - \gamma\tau^2$ to characterise the relationship between the tax rate $\tau$ and GDP growth. The following assumptions are made:
+		
+		\begin{itemize}
+			\item The tax rate and GDP growth relationship is assumed to be smooth and continuously differentiable, such that changes in taxation results in gradual changes in economic growth.
+			
+			\item The model assumes a Laffer-type relationship in which GDP growth initially rises with taxation, reaches an optimal level, and subsequently falls at higher tax rates.
+			
+			\item The parameters satisfy $\alpha>0$, $\beta>0$, and $\gamma>0$, ensuring positive baseline growth, an initially positive tax effect, and diminishing returns to taxation.
+			
+			\item The quadratic specification is a second-order Taylor approximation around a low tax rate, with higher-order terms assumed negligible.
+			
+			\item Taxation is treated as the primary determinant of GDP growth, while other macroeconomic factors are assumed constant.
+			
+			\item The tax rate is restricted to the feasible interval $[\tau_{\min},\tau_{\max}]$, reflecting policy constraints and motivating the use of KKT conditions.
+		\end{itemize}
+		
+		\label{sec:model_formulation}
+		
+		
+		
+		\subsubsection{Definition of Variables}
+		
+		We define all the variables necessary used in  the formulation of
+		the model.
+		
+		
+		Table~\ref{tab:variables} summarizes all variables and parameters used in the model.
+		
+		\begin{table}[H]
+			\centering
+			\caption{Shows the variables and parameters of the Model}
+			\label{tab:variables}
+			\begin{tabular}{clp{7cm}}
+				\toprule
+				\textbf{Symbol} & \textbf{Type} & \textbf{Definition} \\
+				\midrule
+				$\tau$         & Decision variable & Tax rate, measured as tax revenue as a percentage of GDP expressed as a decimal. \\[4pt]
+				$g(\tau)$      & Objective function & Annual GDP growth rate (\%) as a function of tax rate $\tau$ \\[4pt]
+				$\taustar$     & Optimal solution & The value of $\tau$ that maximizes $g(\tau)$ \\[4pt]
+				$\tau_{min}$   & Lower bound & Minimum feasible tax rate  \\[4pt]
+				$\tau_{max}$   & Upper bound & Maximum feasible tax rate \\[4pt]
+				$\alpha$       & Parameter & The intercept thus,baseline GDP growth when $\tau = 0$ \\[4pt]
+				$\beta$        & Parameter & The linear coefficient thus, the growth benefit of marginal tax increase \\[4pt]
+				$\gamma$       & Parameter & The quadratic coefficient thus, the diminishing returns, must be $>0$) \\[4pt]
+				$\mu_1, \mu_2$ & KKT multipliers & Dual variables associated with the lower and upper bound constraints \\[4pt]
+				$\lagr$        & Lagrangian & The Lagrangian function used in the KKT formulation \\
+				\bottomrule
+			\end{tabular}
+		\end{table}
+		
+	\end{document}
